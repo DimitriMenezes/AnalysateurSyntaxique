@@ -14,15 +14,26 @@ namespace Services.Gram
 
         public FrancaisGrammaire()
         {
-            var verbInfinitive = "";// ReadJson();
+            var verbInfinitive = ReadJson();
+            var alfabet = Alphabet();
 
             this.grammarString = @"
-                <mot> ::= (<Letter>)
+                <mot>::=     {'A'|'a'|'B'|'b'|'C'|'c'|'D'|'d'|'E'|'e'|'F'|'f'
+                |'G'|'g'|'H'|'h'|'I'|'i'|'J'|'j'|'K'|'k'|'L'|'l'
+                |'M'|'m'|'N'|'n'|'O'|'o'|'P'|'p'|'Q'|'q'|'R'|'r'
+                |'S'|'s'|'T'|'t'|'U'|'u'|'V'|'v'|'W'|'w'|'X'|'x'
+                |'Y'|'y'|'Z'|'z'
+                |'À' | 'à' | 'Â' | 'â' | 'Æ' | 'æ' | 'Ç' | 'ç' 
+                | 'É' | 'é' | 'È' | 'è' | 'Ê' | 'ê' | 'Ë' | 'ë'
+                | 'Î' | 'î' | 'Ï' | 'ï' | 'Ô' | 'ô' | 'Œ' | 'œ' 
+                | 'Ù' | 'ù' | 'Û' | 'û' | 'Ü' | 'ü' | 'Ÿ' | 'ÿ'}
+
                 <article-def-les> ::= 'les'
                 <article-def-la> ::= 'la'
                 <article-def-le> ::= 'le'
+                <article-def-l> ::= 'l`'
                 <et> ::= 'et'
-                <pronom-personnel-je> ::= 'je' | 'Je' | 'J' | 'j'
+                <pronom-personnel-je> ::= 'je' | 'Je' | 'J`' | 'j`'
                 <pronom-personnel-tu> ::= 'Tu' | 'tu'
                 <pronom-personnel-il> ::= 'Il' | 'il'
                 <pronom-personnel-elle> ::= 'Elle' | 'elle'
@@ -56,23 +67,34 @@ namespace Services.Gram
                                             | <pronom-personnel-ils>
                 <sujet-simple> ::= <pronom-personnel-singulier>
                 <sujet-composé> ::= <pronom-personnel-pluriel>
-                <sujet> ::= <sujet-simple> | <sujet-composé> | <sujet> ', ' <sujet> | <sujet> ' ' <et> ' ' <sujet>
+                <sujet> ::= <sujet-simple> | <sujet-composé> | <sujet> ',' <sujet> | <sujet> <et> <sujet>
 
 	            <conjugaison-primeire-personne-singulier-present> ::= 'suis' | 'ai'
-	            <conjugaison-seconde-personne-singulier-present> ::= 'es' | 'a' | 'née'
-	            <conjugaison-troisienne-personne-singulier-present> ::= 'est' | 'as'
+	            <conjugaison-deuxieme-personne-singulier-present> ::= 'es' | 'a' | 'née'
+	            <conjugaison-troisieme-personne-singulier-present> ::= 'est' | 'as'
 	            <conjugaison-premiere-personne-pluriel-present> ::= 'sommes' | 'avons'
-	            <conjugaison-seconde-personne-pluriel-present> ::= 'êtes' | 'avez'
-	            <conjugaison-troisienne-personne-pluriel-present> ::= 'sont' | 'ont'
-                <conjugaison-singulier-present> ::= <pronom-personnel-je> <conjugaison-primeire-personne-singulier-present>
-                                                | <pronom-personnel-tu> <conjugaison-seconde-personne-singulier-present>
-                                                | <pronom-personnel-il> <conjugaison-troisienne-personne-singulier-present>
-                                                | <pronom-personnel-elle> <conjugaison-troisienne-personne-singulier-present>
-                                                | <pronom-personnel-on> <conjugaison-troisienne-personne-singulier-present>
+	            <conjugaison-deuxieme-personne-pluriel-present> ::= 'êtes' | 'avez'
+	            <conjugaison-troisieme-personne-pluriel-present> ::= 'sont' | 'ont'
+                <conjugaison-singulier-present-posit> ::= <pronom-personnel-je> <conjugaison-primeire-personne-singulier-present> 
+                                                | <pronom-personnel-tu> <conjugaison-deuxieme-personne-singulier-present>
+                                                | <pronom-personnel-il> <conjugaison-troisieme-personne-singulier-present>
+                                                | <pronom-personnel-elle> <conjugaison-troisieme-personne-singulier-present>
+                                                | <pronom-personnel-on> <conjugaison-troisieme-personne-singulier-present>
                                                 | <pronom-personnel-nous> <conjugaison-premiere-personne-pluriel-present>
-                                                | <pronom-personnel-vous> <conjugaison-seconde-personne-pluriel-present>	
-		                                        | <pronom-personnel-ils> <conjugaison-troisienne-personne-pluriel-present>
-                                                | <pronom-personnel-elles> <conjugaison-troisienne-personne-pluriel-present>
+                                                | <pronom-personnel-vous> <conjugaison-deuxieme-personne-pluriel-present>	
+		                                        | <pronom-personnel-ils> <conjugaison-troisieme-personne-pluriel-present>
+                                                | <pronom-personnel-elles> <conjugaison-troisieme-personne-pluriel-present>
+
+                <conjugaison-singulier-present-negat> ::= <pronom-personnel-je> 'ne' <conjugaison-primeire-personne-singulier-present> ('pas' | <empty>)
+                                                | <pronom-personnel-tu> ('ne' | 'n`') <conjugaison-deuxieme-personne-singulier-present> 'pas'
+                                                | <pronom-personnel-il> 'ne' <conjugaison-troisieme-personne-singulier-present> 'pas'
+                                                | <pronom-personnel-elle> 'ne' <conjugaison-troisieme-personne-singulier-present> 'pas'
+                                                | <pronom-personnel-on> 'ne' <conjugaison-troisieme-personne-singulier-present> 'pas'
+                                                | <pronom-personnel-nous> 'ne' <conjugaison-premiere-personne-pluriel-present> 'pas'
+                                                | <pronom-personnel-vous> 'ne' <conjugaison-deuxieme-personne-pluriel-present> 'pas'
+		                                        | <pronom-personnel-ils> 'ne' <conjugaison-troisieme-personne-pluriel-present> 'pas'
+                                                | <pronom-personnel-elles> 'ne' <conjugaison-troisieme-personne-pluriel-present> 'pas'
+              
             
                 <participe_passé> ::= 'née'
                 <participe-passé-masculin-sing> ::= 'né' | 'allé' | 'venu'
@@ -83,49 +105,96 @@ namespace Services.Gram
                 <participe-passé-avoir> ::= 'eu' |'écrit' | 'pris' | 'fait'                           
 
                 <verb-etre-prem-pers-sing> ::= 'suis'
-                <verb-etre-sec-pers-sing> ::= 'es'
+                <verb-etre-deux-pers-sing> ::= 'es'
                 <verb-etre-troi-pers-sing> ::= 'est'
                 <verb-etre-prem-pers-plur> ::= 'sommes'
-                <verb-etre-sec-pers-plur> ::= 'êtes'
+                <verb-etre-deux-pers-plur> ::= 'êtes'
                 <verb-etre-troi-pers-plur> ::= 'sont'
 
                 <verb-avoir-prem-pers-sing> ::= 'ai'
-                <verb-avoir-sec-pers-sing> ::= 'as'
+                <verb-avoir-deux-pers-sing> ::= 'as'
                 <verb-avoir-troi-pers-sing> ::= 'a'
                 <verb-avoir-prem-pers-plur> ::= 'avons'
-                <verb-avoir-sec-pers-plur> ::= 'avez'
+                <verb-avoir-deux-pers-plur> ::= 'avez'
                 <verb-avoir-troi-pers-plur> ::= 'ont'
 
                 <passé-composé-avoir> ::= <pronom-personnel-je> <verb-avoir-prem-pers-sing> <participe-passé-avoir> 
-                                        | <pronom-personnel-tu> <verb-avoir-sec-pers-sing> <participe-passé-avoir>
+                                        | <pronom-personnel-tu> <verb-avoir-deux-pers-sing> <participe-passé-avoir>
                                         |(<pronom-personnel-il> | <pronom-personnel-elle> | <pronom-personnel-on>) <verb-avoir-troi-pers-sing> <participe-passé-avoir>
                                         |<pronom-personnel-nous> <verb-avoir-prem-pers-plur> <participe-passé-avoir>
-                                        |<pronom-personnel-vous> <verb-avoir-sec-pers-plur> <participe-passé-avoir>
+                                        |<pronom-personnel-vous> <verb-avoir-deux-pers-plur> <participe-passé-avoir>
                                         |(<pronom-personnel-ils> | <pronom-personnel-elles>) <verb-avoir-troi-pers-plur> <participe-passé-avoir>
 
-                <passé-composé-etre> ::= <pronom-personnel-je> <verb-etre-prem-pers-sing> <participe-passé-masculin-sing>
-                                        | <pronom-personnel-tu> <verb-etre-sec-pers-sing> <participe-passé-masculin-sing>
+                <passé-composé-etre> ::= <pronom-personnel-je> <verb-etre-prem-pers-sing> (<participe-passé-feminin-sing>|<participe-passé-masculin-sing>)
+                                        | <pronom-personnel-tu> <verb-etre-deux-pers-sing> (<participe-passé-feminin-sing>|<participe-passé-masculin-sing>)
                                         | <pronom-personnel-il> <verb-etre-troi-pers-sing> <participe-passé-masculin-sing>
                                         | <pronom-personnel-elle> <verb-etre-troi-pers-sing> <participe-passé-feminin-sing>
-                                        | <pronom-personnel-nous> <verb-etre-prem-pers-plur> <participe-passé-masculin-plur>
-                                        | <pronom-personnel-vous> <verb-etre-sec-pers-plur> <participe-passé-masculin-plur>
+                                        | <pronom-personnel-on> <verb-etre-deux-pers-sing> (<participe-passé-feminin-sing>|<participe-passé-masculin-sing>) 
+                                        | <pronom-personnel-nous> <verb-etre-prem-pers-plur> (<participe-passé-feminin-plur> |<participe-passé-masculin-plur>)
+                                        | <pronom-personnel-vous> <verb-etre-deux-pers-plur> (<participe-passé-feminin-plur> |<participe-passé-masculin-plur>)
                                         | <pronom-personnel-ils> <verb-etre-troi-pers-plur> <participe-passé-masculin-plur>
                                         | <pronom-personnel-ils> <verb-etre-troi-pers-plur> <participe-passé-feminin-plur>
+                
+                <conjugaison-venir-premiere-person-sing> ::= 'viens'
+                <conjugaison-venir-deuxieme-person-sing> ::= 'viens'
+                <conjugaison-venir-troisieme-person-sing> ::= 'vient'
+                <conjugaison-venir-premiere-person-plur> ::= 'venons'
+                <conjugaison-venir-deuxieme-person-plur> ::= 'venez'
+                <conjugaison-venir-troisieme-person-plur> ::= 'viennent'
+
+                <passé-recent> ::= <pronom-personnel-je> <conjugaison-venir-premiere-person-sing> ('de' | 'd`') <verb-infinitive>                                
 
                 <passé-composé> ::= <passé-composé-avoir> | <passé-composé-etre>
-                <phrase> ::=  <passé-composé> 'D' | <conjugaison-singulier-present> 'D' | '.' | ',' | <et> | <empty> | <EOL>                   
-                <start> ::= {<phrase>}
-                <grammaire> ::= <start>
+                <phrase> ::=  <passé-recent> <mot> (',' | '.')
+                            | <passé-composé> <mot> (',' | '.')
+                            | <conjugaison-singulier-present-posit> <mot> (',' | '.')
+                            | <conjugaison-singulier-present-negat> <mot> (',' | '.')
+                            | <Empty>
+
+                <text> ::= {<phrase>}
+                <start> ::= <text>            
+                <grammaire> ::= <start>        
             ";
+        }
+
+        private string Alphabet()
+        {
+            return @"<letter>::=    'A'|'a'|'B'|'b'|'C'|'c'|'D'|'d'|'E'|'e'|'F'|'f'
+                                    |'G'|'g'|'H'|'h'|'I'|'i'|'J'|'j'|'K'|'k'|'L'|'l'
+                                    |'M'|'m'|'N'|'n'|'O'|'o'|'P'|'p'|'Q'|'q'|'R'|'r'
+                                    |'S'|'s'|'T'|'t'|'U'|'u'|'V'|'v'|'W'|'w'|'X'|'x'
+                                    |'Y'|'y'|'Z'|'z'
+                                    |'À' | 'à' | 'Â' | 'â' | 'Æ' | 'æ' | 'Ç' | 'ç' 
+                                    | 'É' | 'é' | 'È' | 'è' | 'Ê' | 'ê' | 'Ë' | 'ë'
+                                    | 'Î' | 'î' | 'Ï' | 'ï' | 'Ô' | 'ô' | 'Œ' | 'œ' 
+                                    | 'Ù' | 'ù' | 'Û' | 'û' | 'Ü' | 'ü' | 'Ÿ' | 'ÿ'
+
+                    <mot>::=     {'A'|'a'|'B'|'b'|'C'|'c'|'D'|'d'|'E'|'e'|'F'|'f'
+                                    |'G'|'g'|'H'|'h'|'I'|'i'|'J'|'j'|'K'|'k'|'L'|'l'
+                                    |'M'|'m'|'N'|'n'|'O'|'o'|'P'|'p'|'Q'|'q'|'R'|'r'
+                                    |'S'|'s'|'T'|'t'|'U'|'u'|'V'|'v'|'W'|'w'|'X'|'x'
+                                    |'Y'|'y'|'Z'|'z'
+                                    |'À' | 'à' | 'Â' | 'â' | 'Æ' | 'æ' | 'Ç' | 'ç' 
+                                    | 'É' | 'é' | 'È' | 'è' | 'Ê' | 'ê' | 'Ë' | 'ë'
+                                    | 'Î' | 'î' | 'Ï' | 'ï' | 'Ô' | 'ô' | 'Œ' | 'œ' 
+                                    | 'Ù' | 'ù' | 'Û' | 'û' | 'Ü' | 'ü' | 'Ÿ' | 'ÿ'}";
         }
 
         public AnalyseurModel Analyseur(string text)
         {
-            var grammar = new BnfGrammar().Build(this.grammarString, "grammaire");
+            text = FilterString(text);
+            var grammar = new BnfGrammar();
+            var grammarBuilt = grammar.Build(this.grammarString, "grammaire");
+            grammarBuilt.CaseSensitive = false;
 
-            var result = grammar.Match(text);
+            var result = grammarBuilt.Match("");
 
             return new AnalyseurModel() { Sucess = result.Success, Data = result.ErrorMessage };           
+        }
+
+        private string FilterString(string grammar)
+        {
+            return grammar.Replace("'", "`");
         }
 
 
@@ -135,9 +204,19 @@ namespace Services.Gram
            
             var myJsonString = File.ReadAllText("../Services/Json/verbs-infinitive.json");
             var myJObject = JObject.Parse(myJsonString);
-            var fisrtGroup = myJObject["verbs"]["first_group"];
-            var secondGroup = myJObject["verbs"]["second_group"];
-            var thirdGroup = myJObject["verbs"]["third_group"];
+            var verbPronominaux = myJObject["verbs"]["proniminaux"];
+            var fisrtGroup = myJObject["verbs"]["premier_group"];
+            var secondGroup = myJObject["verbs"]["deuxieme_group"];
+            var thirdGroup = myJObject["verbs"]["troisieme_group"];
+
+            sb.Append("<verb-infinitive-pronominaux> ::= ");
+            foreach (var verb in verbPronominaux)
+            {
+                sb.Append("'" + verb + "'");
+                if (verb.Next != null)
+                    sb.Append(" | ");
+            }
+            sb.AppendLine();
 
             sb.Append("<verb-infinitive-premiere-group> ::= ");
             foreach (var verb in fisrtGroup)
@@ -147,7 +226,7 @@ namespace Services.Gram
                     sb.Append(" | ");                
             }
             sb.AppendLine();
-            sb.Append("<verb-infinitive-second-group> ::= ");
+            sb.Append("<verb-infinitive-deuxieme_group> ::= ");
             foreach (var verb in secondGroup)
             {
                 sb.Append("'" + verb + "'");
@@ -155,7 +234,7 @@ namespace Services.Gram
                     sb.Append(" | ");
             }
             sb.AppendLine();
-            sb.Append("<verb-infinitive-troisiene-group> ::= ");
+            sb.Append("<verb-infinitive-troisieme-group> ::= ");
             foreach (var verb in thirdGroup)
             {
                 sb.Append("'" + verb + "'");
@@ -163,7 +242,7 @@ namespace Services.Gram
                     sb.Append(" | ");
             }
             sb.AppendLine();
-            sb.Append("<verb-infinitive> ::= <verb-infinitive-premiere-group> | <verb-infinitive-second-group> | <verb-infinitive-troisiene-group>");
+            sb.Append("<verb-infinitive> ::= <verb-infinitive-premiere-group> | <verb-infinitive-second-group> | <verb-infinitive-troisieme-group> | <verb-infinitive-pronominaux>");
             return sb.ToString();
         }
     }
