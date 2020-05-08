@@ -17,7 +17,7 @@ namespace Services.Gram
             var verbInfinitive = ReadJson();
             var alfabet = Alphabet();
 
-            this.grammarString = @"
+            this.grammarString = string.Concat(verbInfinitive) + @"
                 <mot>::=     {'A'|'a'|'B'|'b'|'C'|'c'|'D'|'d'|'E'|'e'|'F'|'f'
                 |'G'|'g'|'H'|'h'|'I'|'i'|'J'|'j'|'K'|'k'|'L'|'l'
                 |'M'|'m'|'N'|'n'|'O'|'o'|'P'|'p'|'Q'|'q'|'R'|'r'
@@ -95,8 +95,6 @@ namespace Services.Gram
 		                                        | <pronom-personnel-ils> 'ne' <conjugaison-troisieme-personne-pluriel-present> 'pas'
                                                 | <pronom-personnel-elles> 'ne' <conjugaison-troisieme-personne-pluriel-present> 'pas'
               
-            
-                <participe_passé> ::= 'née'
                 <participe-passé-masculin-sing> ::= 'né' | 'allé' | 'venu'
                 <participe-passé-feminin-sing> ::= 'née' | 'allée' | 'venue'               
                 <participe-passé-masculin-plur> ::= 'nés'  | 'allés' | 'venus'
@@ -142,18 +140,18 @@ namespace Services.Gram
                 <conjugaison-venir-deuxieme-person-plur> ::= 'venez'
                 <conjugaison-venir-troisieme-person-plur> ::= 'viennent'
 
-                <passé-recent> ::= <pronom-personnel-je> <conjugaison-venir-premiere-person-sing> ('de' | 'd`') <verb-infinitive>                                
+                <passé-recent> ::= <pronom-personnel-je> <conjugaison-venir-premiere-person-sing> 'de' <verb-infinitive-consonne> 
+                                 | <pronom-personnel-je> <conjugaison-venir-premiere-person-sing>  'd`' <verb-infinitive-vowel>                                
 
                 <passé-composé> ::= <passé-composé-avoir> | <passé-composé-etre>
                 <phrase> ::=  <passé-recent> <mot> (',' | '.')
                             | <passé-composé> <mot> (',' | '.')
                             | <conjugaison-singulier-present-posit> <mot> (',' | '.')
-                            | <conjugaison-singulier-present-negat> <mot> (',' | '.')
-                            | <Empty>
+                            | <conjugaison-singulier-present-negat> <mot> (',' | '.')                           
 
                 <text> ::= {<phrase>}
                 <start> ::= <text>            
-                <grammaire> ::= <start>        
+                <grammaire> ::= <start>
             ";
         }
 
@@ -187,7 +185,7 @@ namespace Services.Gram
             var grammarBuilt = grammar.Build(this.grammarString, "grammaire");
             grammarBuilt.CaseSensitive = false;
 
-            var result = grammarBuilt.Match("");
+            var result = grammarBuilt.Match(text);
 
             return new AnalyseurModel() { Sucess = result.Success, Data = result.ErrorMessage };           
         }
@@ -204,13 +202,18 @@ namespace Services.Gram
            
             var myJsonString = File.ReadAllText("../Services/Json/verbs-infinitive.json");
             var myJObject = JObject.Parse(myJsonString);
-            var verbPronominaux = myJObject["verbs"]["proniminaux"];
-            var fisrtGroup = myJObject["verbs"]["premier_group"];
-            var secondGroup = myJObject["verbs"]["deuxieme_group"];
-            var thirdGroup = myJObject["verbs"]["troisieme_group"];
+            var verbPronominauxVowel = myJObject["verbs"]["proniminaux"]["vowel"];
+            var verbPronominauxConsonne = myJObject["verbs"]["proniminaux"]["consonne"];
+            var fisrtGroupVowel = myJObject["verbs"]["premier_group"]["vowel"];
+            var fisrtGroupConsonne = myJObject["verbs"]["premier_group"]["consonne"];
+            var secondGroupVowel = myJObject["verbs"]["deuxieme_group"]["vowel"];
+            var secondGroupConsonne = myJObject["verbs"]["deuxieme_group"]["consonne"];
+            var thirdGroupVowel = myJObject["verbs"]["troisieme_group"]["vowel"];
+            var thirdGroupConsonne = myJObject["verbs"]["troisieme_group"]["consonne"];
 
-            sb.Append("<verb-infinitive-pronominaux> ::= ");
-            foreach (var verb in verbPronominaux)
+            #region VERB INFINITIVE PRONOMINAUX
+            sb.Append("<verb-infinitive-pronominaux-vowel> ::= ");
+            foreach (var verb in verbPronominauxVowel)
             {
                 sb.Append("'" + verb + "'");
                 if (verb.Next != null)
@@ -218,31 +221,81 @@ namespace Services.Gram
             }
             sb.AppendLine();
 
-            sb.Append("<verb-infinitive-premiere-group> ::= ");
-            foreach (var verb in fisrtGroup)
+            sb.Append("<verb-infinitive-pronominaux-consonne> ::= ");
+            foreach (var verb in verbPronominauxConsonne)
+            {
+                sb.Append("'" + verb + "'");
+                if (verb.Next != null)
+                    sb.Append(" | ");
+            }
+            sb.AppendLine();
+            #endregion
+
+            #region VERB INFINITIVE PREMIER GROUP
+            sb.Append("<verb-infinitive-premiere-group-vowel> ::= ");
+            foreach (var verb in fisrtGroupVowel)
             {
                 sb.Append("'" + verb + "'");
                 if (verb.Next != null)
                     sb.Append(" | ");                
             }
             sb.AppendLine();
-            sb.Append("<verb-infinitive-deuxieme_group> ::= ");
-            foreach (var verb in secondGroup)
+
+            sb.Append("<verb-infinitive-premiere-group-consonne> ::= ");
+            foreach (var verb in fisrtGroupConsonne)
             {
                 sb.Append("'" + verb + "'");
                 if (verb.Next != null)
                     sb.Append(" | ");
             }
             sb.AppendLine();
-            sb.Append("<verb-infinitive-troisieme-group> ::= ");
-            foreach (var verb in thirdGroup)
+            #endregion
+
+            #region VERB INFINITIVE DEUXIEME GROUP
+            sb.Append("<verb-infinitive-deuxieme-group-vowel> ::= ");
+            foreach (var verb in secondGroupVowel)
             {
                 sb.Append("'" + verb + "'");
                 if (verb.Next != null)
                     sb.Append(" | ");
             }
             sb.AppendLine();
-            sb.Append("<verb-infinitive> ::= <verb-infinitive-premiere-group> | <verb-infinitive-second-group> | <verb-infinitive-troisieme-group> | <verb-infinitive-pronominaux>");
+
+            sb.Append("<verb-infinitive-deuxieme-group-consonne> ::= ");
+            foreach (var verb in secondGroupConsonne)
+            {
+                sb.Append("'" + verb + "'");
+                if (verb.Next != null)
+                    sb.Append(" | ");
+            }
+            sb.AppendLine();
+            #endregion
+
+            #region VERB INFINITIVE TROISIEME GROUP
+            sb.Append("<verb-infinitive-troisieme-group-vowel> ::= ");
+            foreach (var verb in thirdGroupVowel)
+            {
+                sb.Append("'" + verb + "'");
+                if (verb.Next != null)
+                    sb.Append(" | ");
+            }
+            sb.AppendLine();
+
+            sb.Append("<verb-infinitive-troisieme-group-consonne> ::= ");
+            foreach (var verb in thirdGroupConsonne)
+            {
+                sb.Append("'" + verb + "'");
+                if (verb.Next != null)
+                    sb.Append(" | ");
+            }
+            sb.AppendLine();
+            #endregion
+
+
+            sb.Append("<verb-infinitive-vowel> ::= <verb-infinitive-premiere-group-vowel> | <verb-infinitive-deuxieme-group-vowel> | <verb-infinitive-troisieme-group-vowel> | <verb-infinitive-pronominaux-vowel>");
+            sb.AppendLine();
+            sb.Append("<verb-infinitive-consonne> ::= <verb-infinitive-premiere-group-consonne> | <verb-infinitive-deuxieme-group-consonne> | <verb-infinitive-troisieme-group-consonne> | <verb-infinitive-pronominaux-consonne>");
+            sb.AppendLine();
             return sb.ToString();
         }
     }
